@@ -2,14 +2,14 @@
 plot raster & peth per syllable
 """
 
-from analysis.functions import get_spectral_entropy
-from analysis.parameters import freq_range, peth_parm, note_color, tick_width, tick_length, nb_note_crit
-from analysis.spike import ClusterInfo, AudioData, pcc_shuffle_test
+from pyfinch.analysis import get_spectral_entropy
+from pyfinch.analysis import freq_range, peth_parm, note_color, tick_width, tick_length, nb_note_crit
+from pyfinch.analysis import ClusterInfo, AudioData, pcc_shuffle_test
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 from matplotlib import pyplot as plt
 import numpy as np
-from database.load import create_db, DBInfo, ProjectLoader
+from pyfinch.database.load import create_db, DBInfo, ProjectLoader
 from util import save
 from util.draw import remove_right_top
 from util.functions import find_str, myround

@@ -3,9 +3,9 @@ Get correlation between entropy and number of spikes per syllable
 v2 computes values from 50 ms prior to onset to 50 ms prior to offset
 """
 
-from analysis.parameters import note_buffer, freq_range, nb_note_crit, pre_motor_win_size, alpha
-from analysis.spike import ClusterInfo, AudioData
-from database.load import ProjectLoader, DBInfo
+from pyfinch.analysis import note_buffer, freq_range, nb_note_crit, pre_motor_win_size, alpha
+from pyfinch.analysis import ClusterInfo, AudioData
+from pyfinch.database.load import ProjectLoader, DBInfo
 from util import save
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec

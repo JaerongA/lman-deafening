@@ -4,9 +4,9 @@ spikes aligned relative to syllable onset
 multiple song syllables could be stacked and sorted according to duration
 """
 
-from analysis.parameters import tick_length, tick_width, note_color
-from analysis.spike import ClusterInfo
-from database.load import DBInfo, ProjectLoader
+from pyfinch.analysis import tick_length, tick_width, note_color
+from pyfinch.analysis import ClusterInfo
+from pyfinch.database.load import DBInfo, ProjectLoader
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np

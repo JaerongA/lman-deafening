@@ -12,9 +12,9 @@ def get_entropy(query,
                 view_folder=False,
                 update_db=False,
                 fig_ext='.png'):
-    from analysis.parameters import note_buffer, freq_range, nb_note_crit
-    from analysis.song import AudioInfo, SongInfo
-    from database.load import create_db, DBInfo, ProjectLoader
+    from pyfinch.analysis import note_buffer, freq_range, nb_note_crit
+    from pyfinch.analysis import AudioInfo, SongInfo
+    from pyfinch.database.load import create_db, DBInfo, ProjectLoader
     from util import save
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec

@@ -4,9 +4,9 @@ Get mean firing rates per condition
 Get firing rates from song motif (including pre-motor windows)
 Stores the results in the unit_profile table
 """
-from analysis.parameters import nb_note_crit
-from analysis.spike import BaselineInfo, MotifInfo
-from database.load import ProjectLoader, DBInfo, create_db
+from pyfinch.analysis import nb_note_crit
+from pyfinch.analysis import BaselineInfo, MotifInfo
+from pyfinch.database.load import ProjectLoader, DBInfo, create_db
 
 def get_firing_rates():
 

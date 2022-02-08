@@ -13,9 +13,9 @@ def get_raster_syllable(query,
                         time_warp=True,
                         fig_ext='.png'):
 
-    from analysis.parameters import freq_range, peth_parm, note_color, tick_width, tick_length
-    from analysis.spike import ClusterInfo, AudioData
-    from database.load import create_db, DBInfo, ProjectLoader
+    from pyfinch.analysis import freq_range, peth_parm, note_color, tick_width, tick_length
+    from pyfinch.analysis import ClusterInfo, AudioData
+    from pyfinch.database.load import create_db, DBInfo, ProjectLoader
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
     from matplotlib import pyplot as plt

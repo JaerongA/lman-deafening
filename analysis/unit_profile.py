@@ -2,9 +2,9 @@
 Get unit profiles such as spike correlograms or burstiness
 """
 
-from analysis.parameters import spk_corr_parm
-from analysis.spike import BaselineInfo, BurstingInfo, Correlogram, MotifInfo
-from database.load import ProjectLoader, DBInfo, create_db
+from pyfinch.analysis import spk_corr_parm
+from pyfinch.analysis import BaselineInfo, BurstingInfo, Correlogram, MotifInfo
+from pyfinch.database.load import ProjectLoader, DBInfo, create_db
 import matplotlib.pyplot as plt
 from util import save
 

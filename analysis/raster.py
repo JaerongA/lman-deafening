@@ -22,7 +22,7 @@ def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
     p_sig : dict
         dictionary contains significance for difference contexts
     """
-    from analysis.parameters import peth_shuffle
+    from pyfinch.analysis import peth_shuffle
     from collections import defaultdict
     from functools import partial
     import scipy.stats as stats
@@ -70,9 +70,9 @@ def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
 
 
 def main():
-    from analysis.parameters import peth_parm, freq_range, tick_length, tick_width, note_color, nb_note_crit
-    from analysis.spike import MotifInfo, AudioData
-    from database.load import create_db, DBInfo, ProjectLoader
+    from pyfinch.analysis import peth_parm, freq_range, tick_length, tick_width, note_color, nb_note_crit
+    from pyfinch.analysis import MotifInfo, AudioData
+    from pyfinch.database.load import create_db, DBInfo, ProjectLoader
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
     from util import save

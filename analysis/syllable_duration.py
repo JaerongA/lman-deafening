@@ -5,9 +5,9 @@ Calculation based on EventInfo.m
 
 
 def get_duration(query):
-    from analysis.functions import get_note_type
-    from analysis.song import SongInfo
-    from database.load import ProjectLoader, DBInfo
+    from pyfinch.analysis import get_note_type
+    from pyfinch.analysis import SongInfo
+    from pyfinch.database.load import ProjectLoader, DBInfo
     import pandas as pd
     from util import save
 
@@ -86,7 +86,7 @@ def load_data(data_file, context='ALL', syl_type='ALL'):
 if __name__ == '__main__':
 
     # Check if the data .csv exists
-    from database.load import ProjectLoader
+    from pyfinch.database.load import ProjectLoader
 
     data_file = ProjectLoader().path / 'Analysis' / 'SyllableDuration' / 'SyllableDuration.csv'
 
@@ -103,10 +103,9 @@ if __name__ == '__main__':
     # Plot the results
     import matplotlib.pyplot as plt
     import seaborn as sns
-    import IPython
     from util.functions import unique
     from util import save
-    from database.load import ProjectLoader
+    from pyfinch.database.load import ProjectLoader
 
     fig_ext = '.png'
 

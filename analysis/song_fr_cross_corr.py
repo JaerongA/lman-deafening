@@ -3,9 +3,9 @@ Get time-shifted cross-correlation between song and firing rates
 Only for Undir
 """
 
-from analysis.parameters import freq_range, peth_parm, note_color
-from analysis.spike import MotifInfo, AudioData
-from database.load import DBInfo, ProjectLoader, create_db
+from pyfinch.analysis import freq_range, peth_parm, note_color
+from pyfinch.analysis import MotifInfo, AudioData
+from pyfinch.database.load import DBInfo, ProjectLoader, create_db
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt

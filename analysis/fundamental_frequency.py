@@ -12,10 +12,10 @@ def get_syllable_ff(query,
                     view_folder=False,
                     fig_ext='.png'):
 
-    from analysis.functions import get_ff
-    from analysis.parameters import note_buffer, freq_range, nb_note_crit
-    from analysis.song import AudioInfo, SongInfo
-    from database.load import create_db, DBInfo, ProjectLoader
+    from pyfinch.analysis import get_ff
+    from pyfinch.analysis import note_buffer, freq_range, nb_note_crit
+    from pyfinch.analysis import AudioInfo, SongInfo
+    from pyfinch.database.load import create_db, DBInfo, ProjectLoader
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
     import matplotlib.pyplot as plt

@@ -1,12 +1,11 @@
 """Plotting functions & classes specific to the deafening project"""
 
-from database.load import ProjectLoader
 import matplotlib.pyplot as plt
+from pyfinch.database.load import ProjectLoader
+from pyfinch.util import save
+from pyfinch.util.draw import remove_right_top
 import seaborn as sns
-from util import save
-from util.draw import remove_right_top
 import warnings
-
 warnings.filterwarnings('ignore')
 save_folder_name = 'Results'
 
@@ -659,7 +658,7 @@ def pre_post_comparison(query,
                         fig_ext='.png',
                         save_fig=False,
                         update_cache=False):
-    from database.load import ProjectLoader
+    from pyfinch.database.load import ProjectLoader
     import matplotlib.pyplot as plt
 
     # Parameters

@@ -7,9 +7,9 @@ def plot_raster_bouts(query,
                       bout_nb='All',
                       fig_ext='.png'
                       ):
-    from analysis.spike import AudioData, BoutInfo, ClusterInfo, NeuralData
-    from analysis.parameters import bout_buffer, freq_range, bout_color
-    from database.load import ProjectLoader, DBInfo
+    from pyfinch.analysis import AudioData, BoutInfo, ClusterInfo, NeuralData
+    from pyfinch.analysis import bout_buffer, freq_range, bout_color
+    from pyfinch.database.load import ProjectLoader, DBInfo
     import matplotlib.pyplot as plt
     import matplotlib.colors as colors
     import numpy as np

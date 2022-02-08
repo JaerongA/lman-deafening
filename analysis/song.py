@@ -16,8 +16,8 @@ def analyze_song(query, update_cache=False, update_db=True):
     update_db : bool
         update the song table
     """
-    from analysis.song import SongInfo
-    from database.load import ProjectLoader, DBInfo
+    from pyfinch.analysis.song import SongInfo
+    from pyfinch.database.load import ProjectLoader, DBInfo
 
     # Load database
     db = ProjectLoader().load_db()

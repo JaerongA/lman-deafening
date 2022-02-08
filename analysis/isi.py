@@ -34,8 +34,8 @@ def main(query,
          save_folder_name='ISI',
          fig_ext='.png'
          ):
-    from analysis.spike import MotifInfo, BaselineInfo
-    from database.load import ProjectLoader, DBInfo
+    from pyfinch.analysis import MotifInfo, BaselineInfo
+    from pyfinch.database.load import ProjectLoader, DBInfo
     import matplotlib.pyplot as plt
     from util import save
 

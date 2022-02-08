@@ -2,8 +2,8 @@
 Syllable network analysis and calculates transition entropy
 """
 
-from analysis.song import SongInfo
-from database.load import ProjectLoader, DBInfo
+from pyfinch.analysis import SongInfo
+from pyfinch.database.load import ProjectLoader, DBInfo
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -19,7 +19,7 @@ def nb_song_note_in_bout(song_notes: str, bout: str) -> int:
 
 def get_syl_color(bird_id: str) -> dict:
     """Map colors to each syllable"""
-    from analysis.parameters import sequence_color
+    from pyfinch.analysis import sequence_color
     import copy
 
     # Load database

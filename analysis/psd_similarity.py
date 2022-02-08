@@ -2,24 +2,19 @@
 Get PSD similarity to measure changes in song after deafening
 """
 
-from analysis.spike import ClusterInfo
-from analysis.functions import get_pre_motor_spk_per_note
+from pyfinch.analysis import ClusterInfo
+from pyfinch.analysis import get_pre_motor_spk_per_note
 import matplotlib.gridspec as gridspec
 import numpy as np
 import pandas as pd
-from matplotlib.pylab import psd
-import random
 import scipy
 from scipy import spatial
-from scipy.io import wavfile
 from scipy.stats import sem, pearsonr
 import seaborn as sns
-from database.load import *
-from analysis.functions import *
+from pyfinch.database.load import *
 from util import save
 from util.draw import *
 from util.functions import *
-from util.spect import *
 import gc
 
 # Parameters

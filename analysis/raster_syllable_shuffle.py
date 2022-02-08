@@ -2,17 +2,11 @@
 Shuffle spikes with different parameters and see how the proportion of syllables having significant PCC changes
 """
 
-
-import matplotlib.colors as colors
-import matplotlib.gridspec as gridspec
-from analysis.parameters import *
-from analysis.spike import *
-from database.load import DBInfo, ProjectLoader
-from util import save
+from pyfinch.database.load import DBInfo, ProjectLoader
 from util.draw import *
 
 def create_db():
-    from database.load import ProjectLoader
+    from pyfinch.database.load import ProjectLoader
 
     db = ProjectLoader().load_db()
     with open('../database/create_syllable_pcc_shuffle.sql', 'r') as sql_file:

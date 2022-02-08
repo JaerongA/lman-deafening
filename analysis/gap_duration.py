@@ -4,10 +4,10 @@ Analyze syllable gap durations
 
 
 def main():
-    from analysis.functions import find_str
-    from analysis.song import SongInfo
+    from pyfinch.analysis import find_str
+    from pyfinch.analysis import SongInfo
     from collections import defaultdict
-    from database.load import ProjectLoader, DBInfo, create_db
+    from pyfinch.database.load import ProjectLoader, DBInfo, create_db
     from functools import partial
     import numpy as np
 

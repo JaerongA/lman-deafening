@@ -4,9 +4,9 @@ Calculates signal-to-noise ratio (SNR) relative to the background (raw neural tr
 Save results to unit_profile table
 """
 
-from analysis.functions import get_snr
-from analysis.spike import ClusterInfo, NeuralData
-from database.load import create_db, DBInfo, ProjectLoader
+from pyfinch.analysis import get_snr
+from pyfinch.analysis import ClusterInfo, NeuralData
+from pyfinch.database.load import create_db, DBInfo, ProjectLoader
 import matplotlib.pyplot as plt
 from util import save
 from util.draw import set_fig_size

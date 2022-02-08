@@ -12,9 +12,9 @@ def get_ff_spk_corr(query,
                     save_csv=False,
                     fig_ext='.png'):
 
-    from analysis.parameters import note_buffer, freq_range, nb_note_crit, pre_motor_win_size, alpha
-    from analysis.spike import ClusterInfo, AudioData
-    from analysis.functions import get_ff
+    from pyfinch.analysis import note_buffer, freq_range, nb_note_crit, pre_motor_win_size, alpha
+    from pyfinch.analysis import ClusterInfo, AudioData
+    from pyfinch.analysis import get_ff
     from util import save
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
@@ -522,7 +522,7 @@ def draw_sig_prop(df, sig_prop,
 
 if __name__ == '__main__':
 
-    from database.load import create_db, DBInfo, ProjectLoader
+    from pyfinch.database.load import create_db, DBInfo, ProjectLoader
     import matplotlib.pyplot as plt
     import pandas as pd
     from util import save

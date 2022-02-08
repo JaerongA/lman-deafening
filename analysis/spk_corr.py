@@ -2,15 +2,9 @@
 Get correlation between the number of spikes (or firing rates) and song features
 """
 
-import matplotlib.colors as colors
-import matplotlib.gridspec as gridspec
-
-from analysis.parameters import peth_parm, freq_range, note_color, tick_width, tick_length
-from analysis.spike import *
-from database.load import DBInfo, ProjectLoader
+from pyfinch.database.load import DBInfo, ProjectLoader
 from util import save
 from util.draw import *
-from util.spect import *
 import pandas as pd
 
 
@@ -31,7 +25,7 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path, npy_update=Fal
     """
     # Get number of spikes from pre-motor window per note
 
-    from database.load import ProjectLoader
+    from pyfinch.database.load import ProjectLoader
     import numpy as np
 
     # Create a new database (song_syllable)
