@@ -2,9 +2,9 @@
 plot raster & peth per syllable
 """
 
-from pyfinch.analysis import get_spectral_entropy
-from pyfinch.analysis import freq_range, peth_parm, note_color, tick_width, tick_length, nb_note_crit
-from pyfinch.analysis import ClusterInfo, AudioData, pcc_shuffle_test
+from pyfinch.analysis.functions import get_spectral_entropy
+from pyfinch.analysis.parameters import freq_range, peth_parm, note_color, tick_width, tick_length, nb_note_crit
+from pyfinch.analysis.spike import ClusterInfo, AudioData, pcc_shuffle_test
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 from matplotlib import pyplot as plt
