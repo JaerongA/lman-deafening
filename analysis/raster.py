@@ -1,6 +1,8 @@
 """
-Plot raster & peth for motif
+Plot raster & Peth for motif
+
 Calculate spike temporal precision metrics such as pcc
+
 Store results in pcc table
 """
 import matplotlib.pyplot as plt
@@ -10,6 +12,7 @@ import numpy as np
 def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
     """
     Test whether pcc value is significant compared to the baseline pcc computed using shuffled spikes
+
     Parameters
     ----------
     MotifInfo : class object
@@ -22,7 +25,7 @@ def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
     p_sig : dict
         dictionary contains significance for difference contexts
     """
-    from pyfinch.analysis import peth_shuffle
+    from pyfinch.analysis.parameters import peth_shuffle
     from collections import defaultdict
     from functools import partial
     import scipy.stats as stats
@@ -49,7 +52,7 @@ def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
 
     # Plot histogram
     if plot_hist:
-        from util.draw import remove_right_top
+        from pyfinch.utils.draw import remove_right_top
 
         fig, axes = plt.subplots(1, 2, figsize=(6, 3))
         plt.suptitle('PCC shuffle distribution', y=.98, fontsize=10)
@@ -70,14 +73,15 @@ def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
 
 
 def main():
-    from pyfinch.analysis import peth_parm, freq_range, tick_length, tick_width, note_color, nb_note_crit
-    from pyfinch.analysis import MotifInfo, AudioData
+
+    from pyfinch.analysis.parameters import peth_parm, freq_range, tick_length, tick_width, note_color, nb_note_crit
+    from pyfinch.analysis.spike import MotifInfo, AudioData
     from pyfinch.database.load import create_db, DBInfo, ProjectLoader
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
-    from util import save
-    from util.functions import myround
-    from util.draw import remove_right_top
+    from pyfinch.utils import save
+    from pyfinch.utils.functions import myround
+    from pyfinch.utils.draw import remove_right_top
     import warnings
     warnings.filterwarnings('ignore')
 
@@ -545,13 +549,14 @@ def main():
 
 
 if __name__ == '__main__':
+
     # Parameters
     time_warp = True  # perform piece-wise linear time-warping
     update = False  # Update the cache file (.npz) per cluster
     normalize_fr = True  # Set True to normalize firing rates
     shuffled_baseline = False  # get PETH from shuffled spikes for getting pcc baseline
     save_folder_name = 'Raster'  # Folder name to save figures
-    save_fig = True  # Save the figure
+    save_fig = False  # Save the figure
     update_db = False  # update database
     view_folder = True  # open the folder where the result figures are saved
     fig_ext = '.pdf'  # set to '.pdf' for vector output (.png by default)
@@ -559,7 +564,5 @@ if __name__ == '__main__':
 
     # SQL statement
     # Select from cluster table
-    query = "SELECT * FROM cluster WHERE birdID='w16w14' AND analysisOK AND id>=33"
-    # query = "SELECT * FROM cluster WHERE id=33"
-
+    query = "SELECT * FROM cluster WHERE birdID='w16w14' AND analysisOK"
     main()

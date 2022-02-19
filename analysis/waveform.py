@@ -4,12 +4,12 @@ Calculates signal-to-noise ratio (SNR) relative to the background (raw neural tr
 Save results to unit_profile table
 """
 
-from pyfinch.analysis import get_snr
-from pyfinch.analysis import ClusterInfo, NeuralData
+from pyfinch.analysis.functions import get_snr
+from pyfinch.analysis.spike import ClusterInfo, NeuralData
 from pyfinch.database.load import create_db, DBInfo, ProjectLoader
 import matplotlib.pyplot as plt
-from util import save
-from util.draw import set_fig_size
+from pyfinch.utils import save
+from pyfinch.utils.draw import set_fig_size
 
 
 def plot_waveform(ax, wf_ts, spk_wf,
@@ -46,7 +46,7 @@ def plot_waveform(ax, wf_ts, spk_wf,
 
     """
     import numpy as np
-    from util.draw import remove_right_top
+    from pyfinch.utils.draw import remove_right_top
 
     if plot_individual_wf:
         # Randomly select proportions of waveforms to plot
@@ -166,6 +166,7 @@ def analyze_waveform():
 
 
 if __name__ == '__main__':
+
     # Parameters
     spk_proportion = 0.5  # proportion of waveforms to plot (0 to 1)
     interpolate = False  # interpolate spike waveform to artificially increase the number of data points
@@ -183,6 +184,6 @@ if __name__ == '__main__':
     save_folder_name = 'Waveform'  # figures saved to analysis/save_folder_name
 
     # SQL statement
-    query = "SELECT * FROM cluster"
+    query = "SELECT * FROM cluster WHERE analysisOK"
 
     analyze_waveform()
