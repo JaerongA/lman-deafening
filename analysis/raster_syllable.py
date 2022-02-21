@@ -1,19 +1,21 @@
 """
-plot raster & peth per syllable
+Plot raster & peri-event time histograms per syllable
 """
 
+import warnings
+
+import matplotlib.colors as colors
+import matplotlib.gridspec as gridspec
+import numpy as np
+from matplotlib import pyplot as plt
 from pyfinch.analysis.functions import get_spectral_entropy
 from pyfinch.analysis.parameters import freq_range, peth_parm, note_color, tick_width, tick_length, nb_note_crit
 from pyfinch.analysis.spike import ClusterInfo, AudioData, pcc_shuffle_test
-import matplotlib.colors as colors
-import matplotlib.gridspec as gridspec
-from matplotlib import pyplot as plt
-import numpy as np
 from pyfinch.database.load import create_db, DBInfo, ProjectLoader
-from util import save
-from util.draw import remove_right_top
-from util.functions import find_str, myround
-import warnings
+from pyfinch.utils import save
+from pyfinch.utils.draw import remove_right_top
+from pyfinch.utils.functions import find_str, myround
+
 warnings.filterwarnings('ignore')
 
 
@@ -21,7 +23,7 @@ def get_raster_syllable():
 
     # Create & load database
     if update_db:
-        db = create_db('create_syllable_pcc.sql')
+        db = create_db(db_path)
 
     # parameters
     rec_yloc = 0.05
@@ -57,8 +59,11 @@ def get_raster_syllable():
             notes = TARGET_NOTE
 
         for note in notes:
+
+            print(f"note = {note}")
             # Load note object
-            ni = ci.get_note_info(note, pre_buffer=pre_buffer, post_buffer=post_buffer)  # this will be used for plotting raster
+            ni = ci.get_note_info(note, pre_buffer=pre_buffer,
+                                  post_buffer=post_buffer)  # this will be used for plotting raster
             if not ni:  # the target note does not exist
                 print("The note does not exist!")
                 continue
@@ -72,6 +77,57 @@ def get_raster_syllable():
                 print("Not enough notes!")
                 continue
 
+            # Get canonical transition probability
+            song_note = cluster_db.songNote
+
+            if note is not song_note[-1]:  # if not the last note in the song note
+                canonical_trans_prob = {}
+
+                # Get another note instance and select only renditions with the canonical sequence
+                from copy import deepcopy
+                next_note = song_note[song_note.find(note) + 1]
+                can_seq_ind = find_str(ni.next_notes, next_note)  # index of notes within the canonical sequence
+                if  can_seq_ind:
+
+                    ni_seq = deepcopy(ni)
+
+                    for context in set(ni.contexts):
+                        notes = ''.join([note_ for context_, note_ in zip(ni.contexts, ni.next_notes) if context_ == context])
+                        canonical_trans_prob[context] = notes.count(next_note) / len(notes)
+
+                    ni_seq.select_index(can_seq_ind)
+
+                    if ni_seq.nb_note['U'] >= nb_note_crit:
+
+                        # Get pcc from the notes within a canonical sequence
+                        pi_seq = ni_seq.get_note_peth(duration=ni.median_dur)  # PETH object (PethInfo)
+                        pi_seq.get_fr()  # get firing rates
+                        pi_seq.get_pcc()
+
+                    # Update db
+                    if update_db:
+                        db.create_col(db_table, 'nbInseqNoteUndir', 'INT')
+                        db.create_col(db_table, 'nbInseqNoteDir', 'INT')
+                        db.create_col(db_table, 'pccUndirInSeq', 'REAL')
+                        db.create_col(db_table, 'pccDirInSeq', 'REAL')
+                        db.conn.commit()
+
+                        if 'U' in ni.nb_note:
+                            db.cur.execute(f"""UPDATE syllable_pcc SET nbInseqNoteUndir = ({ni_seq.nb_note['U']}) 
+                            WHERE clusterID = {cluster_db.id} AND note = '{note}'""")
+
+                        if 'D' in ni.nb_note:
+                            db.cur.execute(f"""UPDATE syllable_pcc SET nbInseqNoteDir = ({ni_seq.nb_note['D']}) 
+                            WHERE clusterID = {cluster_db.id} AND note = '{note}'""")
+
+                        if ni_seq.nb_note['U'] >= nb_note_crit:
+                            if 'U' in pi_seq.pcc and ni_seq.nb_note['U'] >= nb_note_crit:
+                                db.cur.execute(f"""UPDATE syllable_pcc SET pccUndirInSeq = ({pi_seq.pcc['U']['mean']}) 
+                                WHERE clusterID = {cluster_db.id} AND note = '{note}'""")
+
+                            if 'D' in pi_seq.pcc and ni_seq.nb_note['D'] >= nb_note_crit:
+                                db.cur.execute(f"""UPDATE syllable_pcc SET pccDirInSeq = ({pi_seq.pcc['D']['mean']}) 
+                                WHERE clusterID = {cluster_db.id} AND note = '{note}'""")
 
             # Plot figure
             fig = plt.figure(figsize=(7, 10), dpi=500)
@@ -269,7 +325,7 @@ def get_raster_syllable():
                 remove_right_top(ax_raster)
 
             # Draw peri-event histogram (PETH)
-            pi = ni.get_note_peth(duration=note_duration)  # PETH object (PethInfo)
+            pi = ni.get_note_peth(duration=ni.median_dur)  # PETH object (PethInfo)
             pi.get_fr()  # get firing rates
 
             # Plot mean firing rates
@@ -329,8 +385,10 @@ def get_raster_syllable():
 
             # Firing rates (includes the pre-motor window)
             # Load NoteInfo class again to calculate firing rates from a different window
-            ni = ci.get_note_info(note, pre_buffer=pre_buffer, post_buffer=post_buffer)  # this will be used for plotting raster
+            ni = ci.get_note_info(note, pre_buffer=pre_buffer,
+                                  post_buffer=post_buffer)  # this will be used for plotting raster
 
+            # Select a specific context
             if NOTE_CONTEXT:
                 ni.select_context(target_context=NOTE_CONTEXT)
 
@@ -396,9 +454,11 @@ def get_raster_syllable():
             ax_txt.text(txt_xloc, txt_yloc, f"Duration = {note_duration : 0.3f} (ms)", fontsize=font_size)
 
             # Print out syllable entropy (if exists)
+
             if entropy:
                 txt_xloc = 1.8
-                txt_yloc = 0.8
+                txt_yloc = 0.2
+
                 for context, value in entropy_mean.items():
                     ax_txt.text(txt_xloc, txt_yloc, f"Entropy ({context}) = {value}", fontsize=font_size)
                     txt_yloc -= txt_inc
@@ -414,18 +474,42 @@ def get_raster_syllable():
                     txt_yloc -= txt_inc
                 txt_yloc -= txt_inc
 
+            # # of in-sequence notes
+            if note is not song_note[-1]:  # if not the last note in the song note
+                txt_xloc = 1.8
+                txt_yloc = 0.8
+
+                if 'ni_seq' in locals():
+                    for i, (k, v) in enumerate(ni_seq.nb_note.items()):
+                        ax_txt.text(txt_xloc, txt_yloc, f"# of in-seq notes ({k}) = {v}", fontsize=font_size)
+                        txt_yloc -= txt_inc
+                    txt_yloc -= txt_inc
+
+                    if ni_seq.nb_note['U'] >= nb_note_crit:
+                        t = ax_txt.text(txt_xloc, txt_yloc, f"in-seq PCC (U) = {pi_seq.pcc['U']['mean']}", fontsize=font_size)
+                    txt_yloc -= txt_inc
+
+                    if ni_seq.nb_note['D'] >= nb_note_crit:
+                        t = ax_txt.text(txt_xloc, txt_yloc, f"in-seq PCC (D) = {pi_seq.pcc['D']['mean']}", fontsize=font_size)
+                    txt_yloc -= txt_inc
+
+                    for i, (k, v) in enumerate(canonical_trans_prob.items()):
+                        ax_txt.text(txt_xloc, txt_yloc, f"Trans prob ({k}) = {v : 0.3f}", fontsize=font_size)
+                        txt_yloc -= txt_inc
+                    txt_yloc -= txt_inc
+
             # Save results to database
             if update_db:  # only use values from time-warped data
                 sql = "INSERT OR IGNORE INTO " \
-                        "syllable_pcc (clusterID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, dph, block10days, note)" \
-                        "VALUES({}, '{}', '{}', {}, {}, {}, {}, {}, '{}')".format(cluster_db.id, cluster_db.birdID,
-                                                                                  cluster_db.taskName,
-                                                                                  cluster_db.taskSession,
-                                                                                  cluster_db.taskSessionDeafening,
-                                                                                  cluster_db.taskSessionPostDeafening,
-                                                                                  cluster_db.dph,
-                                                                                  cluster_db.block10days,
-                                                                                  note)
+                      "syllable_pcc (clusterID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, dph, block10days, note)" \
+                      "VALUES({}, '{}', '{}', {}, {}, {}, {}, {}, '{}')".format(cluster_db.id, cluster_db.birdID,
+                                                                                cluster_db.taskName,
+                                                                                cluster_db.taskSession,
+                                                                                cluster_db.taskSessionDeafening,
+                                                                                cluster_db.taskSessionPostDeafening,
+                                                                                cluster_db.dph,
+                                                                                cluster_db.block10days,
+                                                                                note)
                 db.cur.execute(sql)
 
                 if 'U' in ni.nb_note:
@@ -456,8 +540,8 @@ def get_raster_syllable():
                         f"UPDATE syllable_pcc SET corrContext = ({corr_context}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
                 # Add sparseness index
-                db.create_col('syllable_pcc', 'sparsenessUndir', 'REAL')
-                db.create_col('syllable_pcc', 'sparsenessDir', 'REAL')
+                db.create_col(db_table, 'sparsenessUndir', 'REAL')
+                db.create_col(db_table, 'sparsenessDir', 'REAL')
                 db.conn.commit()
 
                 for context in sparseness.keys():
@@ -467,8 +551,8 @@ def get_raster_syllable():
                             f"UPDATE syllable_pcc SET {col_name} = ({sparseness[context]}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
                 # Add CV of firing rates index
-                db.create_col('syllable_pcc', 'cvFRUndir', 'REAL')
-                db.create_col('syllable_pcc', 'cvFRDir', 'REAL')
+                db.create_col(db_table, 'cvFRUndir', 'REAL')
+                db.create_col(db_table, 'cvFRDir', 'REAL')
                 db.conn.commit()
 
                 for context in fr_cv.keys():
@@ -478,8 +562,8 @@ def get_raster_syllable():
                             f"UPDATE syllable_pcc SET {col_name} = ({fr_cv[context]}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
                 # Add Fano Factor of firing rates index
-                db.create_col('syllable_pcc', 'fanoFactorUndir', 'REAL')
-                db.create_col('syllable_pcc', 'fanoFactorDir', 'REAL')
+                db.create_col(db_table, 'fanoFactorUndir', 'REAL')
+                db.create_col(db_table, 'fanoFactorDir', 'REAL')
                 db.conn.commit()
 
                 for context, fano_factor in pi.fano_factor.items():
@@ -518,8 +602,22 @@ def get_raster_syllable():
                     if 'D' in entropy_var and ni.nb_note['D'] >= nb_note_crit:
                         db.cur.execute(
                             f"UPDATE syllable_pcc SET entropyVarDir = ({entropy_var['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
-
                 db.conn.commit()
+
+                # Add syllable transition info
+                db.create_col(db_table, 'canonicalTransProbUndir', 'REAL')
+                db.create_col(db_table, 'canonicalTransProbDir', 'REAL')
+                db.conn.commit()
+
+                if 'canonical_trans_prob' in locals():
+                    if 'U' in canonical_trans_prob:
+                        db.cur.execute(f"""UPDATE syllable_pcc SET canonicalTransProbUndir = ({canonical_trans_prob['U']: .3f}) 
+                        WHERE clusterID = {cluster_db.id} AND note = '{note}'""")
+
+                    if 'D' in canonical_trans_prob:
+                        db.cur.execute(f"""UPDATE syllable_pcc SET canonicalTransProbDir = ({canonical_trans_prob['D']: .3f}) 
+                        WHERE clusterID = {cluster_db.id} AND note = '{note}'""")
+                    db.conn.commit()
 
             # Save results
             if save_fig:
@@ -530,18 +628,18 @@ def get_raster_syllable():
 
     # Convert db to csv
     if update_db:
-        db.to_csv('syllable_pcc')
+        db.to_csv(db_table)
     print('Done!')
 
 
 if __name__ == '__main__':
 
-    # Parameter
+    # Parameters
     pre_buffer = 50  # time window before syllable onset (in ms)
-    post_buffer = 0   # time window after syllable offset (in ms)
+    post_buffer = 0  # time window after syllable offset (in ms)
     time_warp = True  # spike time warping
     update = False  # set True for recreating a cache file
-    update_db = False  # save results to DB
+    update_db = True  # save results to DB
     entropy = False  # calculate entropy & entropy variance
     entropy_mode = 'spectral'  # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
     shuffled_baseline = False  # get pcc shuffling baseline
@@ -550,9 +648,12 @@ if __name__ == '__main__':
     save_fig = True
     save_folder_name = 'RasterSyllable'
     TARGET_NOTE = 'all'  # notes to plot (set to 'all' to plot all syllables)
-    NOTE_CONTEXT= 'U'  # context to plot ('U', 'D', set to None if you want to plot both)
+    NOTE_CONTEXT = 'U'  # context to plot ('U', 'D', set to None if you want to plot both)
+    db_table = 'syllable_pcc'  # update this table
+    db_path = '../database/create_syllable_pcc.sql'
 
     # SQL statement
-    query = "SELECT * FROM cluster WHERE id=96"
+    # query = "SELECT * FROM cluster WHERE id=96"
+    query = "SELECT * FROM cluster WHERE analysisOK ANd id >= 115"
 
     get_raster_syllable()
