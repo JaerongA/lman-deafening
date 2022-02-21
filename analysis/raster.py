@@ -115,15 +115,16 @@ def main():
         # Load class object
         mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
 
-        # Select a specific context
-        if NOTE_CONTEXT:
-            mi.select_context(target_context=NOTE_CONTEXT)
 
         audio = AudioData(path, update=update)  # audio object
 
         # Get number of motifs
         nb_motifs = mi.nb_motifs(motif)
         nb_motifs.pop('All', None)
+
+        # Select a specific context
+        if NOTE_CONTEXT:
+            mi.select_context(target_context=NOTE_CONTEXT)
 
         # Skip if there are not enough motifs per condition
         # if nb_motifs['U'] < nb_note_crit and nb_motifs['D'] < nb_note_crit:
@@ -132,8 +133,8 @@ def main():
 
         # Plot spectrogram & peri-event histogram (Just the first rendition)
         # for onset, offset in zip(mi.onsets, mi.offsets):
-        onsets = mi.onsets[0]
-        offsets = mi.offsets[0]
+        onsets = mi.onsets[spect_rendition_nb]
+        offsets = mi.offsets[spect_rendition_nb]
 
         # Convert from string to array of floats
         onsets = np.asarray(list(map(float, onsets)))
@@ -225,25 +226,26 @@ def main():
             else:  # plot (unwarped) raw data
                 note_duration = mi.note_durations[motif_ind]
 
-            k = 1  # index for setting the motif color
-            for i, dur in enumerate(note_duration):
+            if not time_warp:
+                k = 1  # index for setting the motif color
+                for i, dur in enumerate(note_duration):
 
-                if i == 0:
-                    # print("i is {}, color is {}".format(i, i-k))
-                    rectangle = plt.Rectangle((0, motif_ind), dur, rec_height,
-                                              fill=True,
-                                              linewidth=1,
-                                              alpha=0.15, rasterized=True,
-                                              facecolor=note_color['Motif'][i])
-                elif not i % 2:
-                    # print("i is {}, color is {}".format(i, i-k))
-                    rectangle = plt.Rectangle((sum(note_duration[:i]), motif_ind), note_duration[i], rec_height,
-                                              fill=True,
-                                              linewidth=1,
-                                              alpha=0.15, rasterized=True,
-                                              facecolor=note_color['Motif'][i - k])
-                    k += 1
-                ax_raster.add_patch(rectangle)
+                    if i == 0:
+                        # print("i is {}, color is {}".format(i, i-k))
+                        rectangle = plt.Rectangle((0, motif_ind), dur, rec_height,
+                                                  fill=True,
+                                                  linewidth=1,
+                                                  alpha=0.15, rasterized=True,
+                                                  facecolor=note_color['Motif'][i])
+                    elif not i % 2:
+                        # print("i is {}, color is {}".format(i, i-k))
+                        rectangle = plt.Rectangle((sum(note_duration[:i]), motif_ind), note_duration[i], rec_height,
+                                                  fill=True,
+                                                  linewidth=1,
+                                                  alpha=0.15, rasterized=True,
+                                                  facecolor=note_color['Motif'][i - k])
+                        k += 1
+                    ax_raster.add_patch(rectangle)
 
             # Demarcate song block (undir vs dir) with a horizontal line
             if pre_context != context:
@@ -256,6 +258,29 @@ def main():
                                    size=6)
 
             pre_context = context
+
+        if time_warp:  # if time-warped (having the same duration per note)
+            k = 1  # index for setting the motif color
+            for i, dur in enumerate(note_duration):
+
+                if i == 0:
+                    # print("i is {}, color is {}".format(i, i-k))
+                    rectangle = plt.Rectangle((0, 0), dur,
+                                              rec_height *sum(nb_motifs.values()),
+                                              fill=True,
+                                              linewidth=1,
+                                              alpha=0.15, rasterized=True,
+                                              facecolor=note_color['Motif'][i])
+                elif not i % 2:
+                    # print("i is {}, color is {}".format(i, i-k))
+                    rectangle = plt.Rectangle((sum(note_duration[:i]), 0), note_duration[i],
+                                              rec_height *sum(nb_motifs.values()),
+                                              fill=True,
+                                              linewidth=1,
+                                              alpha=0.15, rasterized=True,
+                                              facecolor=note_color['Motif'][i - k])
+                    k += 1
+                ax_raster.add_patch(rectangle)
 
         # Demarcate the last block
         ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
@@ -302,25 +327,26 @@ def main():
             else:  # plot (unwarped) raw data
                 note_duration = mi.note_durations[motif_ind]
 
-            k = 1  # index for setting the motif color
-            for i, dur in enumerate(note_duration):
+            if not time_warp:
+                k = 1  # index for setting the motif color
+                for i, dur in enumerate(note_duration):
 
-                if i == 0:
-                    # print("i is {}, color is {}".format(i, i-k))
-                    rectangle = plt.Rectangle((0, motif_ind), dur, rec_height,
-                                              fill=True,
-                                              linewidth=1,
-                                              alpha=0.15, rasterized=True,
-                                              facecolor=note_color['Motif'][i])
-                elif not i % 2:
-                    # print("i is {}, color is {}".format(i, i-k))
-                    rectangle = plt.Rectangle((sum(note_duration[:i]), motif_ind), note_duration[i], rec_height,
-                                              fill=True,
-                                              linewidth=1,
-                                              alpha=0.15, rasterized=True,
-                                              facecolor=note_color['Motif'][i - k])
-                    k += 1
-                ax_raster.add_patch(rectangle)
+                    if i == 0:
+                        # print("i is {}, color is {}".format(i, i-k))
+                        rectangle = plt.Rectangle((0, motif_ind), dur, rec_height,
+                                                  fill=True,
+                                                  linewidth=1,
+                                                  alpha=0.15, rasterized=True,
+                                                  facecolor=note_color['Motif'][i])
+                    elif not i % 2:
+                        # print("i is {}, color is {}".format(i, i-k))
+                        rectangle = plt.Rectangle((sum(note_duration[:i]), motif_ind), note_duration[i], rec_height,
+                                                  fill=True,
+                                                  linewidth=1,
+                                                  alpha=0.15, rasterized=True,
+                                                  facecolor=note_color['Motif'][i - k])
+                        k += 1
+                    ax_raster.add_patch(rectangle)
 
             # Demarcate song block (undir vs dir) with a horizontal line
             if pre_context != context:
@@ -334,6 +360,29 @@ def main():
                                    size=6)
 
             pre_context = context
+
+        if time_warp:  # if time-warped (having the same duration per note)
+            k = 1  # index for setting the motif color
+            for i, dur in enumerate(note_duration):
+
+                if i == 0:
+                    # print("i is {}, color is {}".format(i, i-k))
+                    rectangle = plt.Rectangle((0, 0), dur,
+                                              rec_height *sum(nb_motifs.values()),
+                                              fill=True,
+                                              linewidth=1,
+                                              alpha=0.15, rasterized=True,
+                                              facecolor=note_color['Motif'][i])
+                elif not i % 2:
+                    # print("i is {}, color is {}".format(i, i-k))
+                    rectangle = plt.Rectangle((sum(note_duration[:i]), 0), note_duration[i],
+                                              rec_height *sum(nb_motifs.values()),
+                                              fill=True,
+                                              linewidth=1,
+                                              alpha=0.15, rasterized=True,
+                                              facecolor=note_color['Motif'][i - k])
+                    k += 1
+                ax_raster.add_patch(rectangle)
 
         # Demarcate the last block
         ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
@@ -570,6 +619,7 @@ if __name__ == '__main__':
     fig_ext = '.pdf'  # set to '.pdf' for vector output (.png by default)
     NOTE_CONTEXT= 'U'  # context to plot ('U', 'D', set to None if you want to plot both)
     xlim_max = 600  # max value of the x-axis
+    spect_rendition_nb = 3  # pick the song spectrogram rendition to plot above rasters
 
     # SQL statement
     # Select from cluster table
