@@ -115,6 +115,10 @@ def main():
         # Load class object
         mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
 
+        # Select a specific context
+        if NOTE_CONTEXT:
+            mi.select_context(target_context=NOTE_CONTEXT)
+
         audio = AudioData(path, update=update)  # audio object
 
         # Get number of motifs
@@ -169,7 +173,11 @@ def main():
 
         remove_right_top(ax_spect)
         x_max = myround(duration + peth_parm['buffer'], base=100)
-        ax_spect.set_xlim(-peth_parm['buffer'], x_max)
+
+        if xlim_max:
+            ax_spect.set_xlim(-peth_parm['buffer'], xlim_max)
+        else:
+            ax_spect.set_xlim(-peth_parm['buffer'], mi.median_durations.sum()+peth_parm['buffer'])
         ax_spect.set_ylim(freq_range[0], freq_range[1])
         ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
         plt.yticks(freq_range, [str(freq_range[0]), str(freq_range[1])])
@@ -556,13 +564,14 @@ if __name__ == '__main__':
     normalize_fr = True  # Set True to normalize firing rates
     shuffled_baseline = False  # get PETH from shuffled spikes for getting pcc baseline
     save_folder_name = 'Raster'  # Folder name to save figures
-    save_fig = False  # Save the figure
+    save_fig = True  # Save the figure
     update_db = False  # update database
     view_folder = True  # open the folder where the result figures are saved
     fig_ext = '.pdf'  # set to '.pdf' for vector output (.png by default)
     NOTE_CONTEXT= 'U'  # context to plot ('U', 'D', set to None if you want to plot both)
+    xlim_max = 600  # max value of the x-axis
 
     # SQL statement
     # Select from cluster table
-    query = "SELECT * FROM cluster WHERE birdID='w16w14' AND analysisOK"
+    query = "SELECT * FROM cluster WHERE analysisOK"
     main()
