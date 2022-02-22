@@ -2,12 +2,12 @@
 Syllable network analysis and calculates transition entropy
 """
 
-from pyfinch.analysis import SongInfo
+from pyfinch.analysis.song import SongInfo
 from pyfinch.database.load import ProjectLoader, DBInfo
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from util import save
+from pyfinch.utils import save
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -19,7 +19,7 @@ def nb_song_note_in_bout(song_notes: str, bout: str) -> int:
 
 def get_syl_color(bird_id: str) -> dict:
     """Map colors to each syllable"""
-    from pyfinch.analysis import sequence_color
+    from pyfinch.analysis.parameters import sequence_color
     import copy
 
     # Load database
@@ -127,8 +127,8 @@ def plot_transition_diag(ax, note_seq, syl_network, syl_color,
         factor = 1.7
         text_loc = ((np.array(node_xpos) * factor).tolist(), (np.array(node_ypos) * factor).tolist())
 
-        for ind, note in enumerate(note_seq):
-            ax.text(text_loc[0][ind], text_loc[1][ind], note_seq[ind], fontsize=15)
+    for ind, note in enumerate(note_seq):
+        ax.text(text_loc[0][ind], text_loc[1][ind], note_seq[ind], fontsize=15)
 
 
 def get_syllable_network(trans_matrix: np.ndarray) -> list:
@@ -437,7 +437,7 @@ if __name__ == '__main__':
     ignore_repeats = True  # ignore repeats when calculating entropy
 
     # SQL statement
-    query = "SELECT * FROM song WHERE id=48"
-    # query = "SELECT * FROM song"
+    # query = "SELECT * FROM song WHERE id=48"
+    query = "SELECT * FROM song"
 
     main()
