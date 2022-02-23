@@ -1,18 +1,20 @@
 """
-Plot song-triggered spike rasters & peth
-spikes aligned relative to syllable onset
-multiple song syllables could be stacked and sorted according to duration
+Plot song-triggered spike rasters & peth.
+
+Spikes aligned relative to syllable onset.
+
+Multiple song syllables could be stacked and sorted according to duration
 """
 
-from pyfinch.analysis import tick_length, tick_width, note_color
-from pyfinch.analysis import ClusterInfo
+from pyfinch.analysis.parameters import tick_length, tick_width, note_color
+from pyfinch.analysis.spike import ClusterInfo
 from pyfinch.database.load import DBInfo, ProjectLoader
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
-from util import save
-from util.draw import remove_right_top
-from util.functions import myround
+from pyfinch.utils import save
+from pyfinch.utils.draw import remove_right_top
+from pyfinch.utils.functions import myround
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -74,7 +76,6 @@ def sort_trials_by_dur_per_note(NoteInfo, context='U') -> str:
 def main():
     # parameters
     nb_bins = abs(pre_evt_buffer) + (2 * abs(post_evt_buffer))
-    global TARGET_NOTE
 
     # Load database
     db = ProjectLoader().load_db()
@@ -112,13 +113,13 @@ def main():
         if not TARGET_NOTE:
             # target_note = cluster_db.introNotes + cluster_db.songNote + cluster_db.calls
             # target_note = cluster_db.introNotes + cluster_db.calls
-            TARGET_NOTE = cluster_db.songNote
+            target_note_ = cluster_db.songNote
 
         if sort_by_syllable:
             # Sort the notes based on median duration
-            TARGET_NOTE = get_sorted_notes(ci, TARGET_NOTE)
+            target_note_ = get_sorted_notes(ci, target_note_)
 
-            for ind, note in enumerate(TARGET_NOTE):
+            for ind, note in enumerate(target_note_):
                 ni = ci.get_note_info(note, pre_buffer=pre_evt_buffer, post_buffer=post_evt_buffer)
                 contexts, notes, spk_ts, onsets, durations = sort_trials_by_dur_per_note(ni, CONTEXT)
 
@@ -137,7 +138,7 @@ def main():
             zipped_list = list(zip(note_contexts, note_all, note_spks, note_onsets, note_durations))
 
         else:
-            for ind, note in enumerate(TARGET_NOTE):
+            for ind, note in enumerate(target_note_):
                 ni = ci.get_note_info(note, pre_buffer=pre_evt_buffer, post_buffer=post_evt_buffer)
                 note_contexts += ni.contexts
                 note_all += ni.note * len(ni.contexts)
@@ -146,6 +147,8 @@ def main():
                 note_durations = np.append(note_durations, ni.durations)
                 pi = ni.get_note_peth(time_warp=False, pre_evt_buffer=pre_evt_buffer, duration=post_evt_buffer,
                                       bin_size=bin_size, nb_bins=nb_bins)
+                del ni
+
                 if ind == 0:
                     peth = pi.peth[CONTEXT]
                 else:
@@ -163,7 +166,7 @@ def main():
         fig = plt.figure(figsize=(6, 8), dpi=900)
         fig.set_tight_layout(False)
 
-        fig_name = f"{ci.name} ({TARGET_NOTE}) - {CONTEXT}"
+        fig_name = f"{ci.name} ({target_note_}) - {CONTEXT}"
         plt.suptitle(fig_name, y=.93, fontsize=10)
         gs = gridspec.GridSpec(8, 7)
         gs.update(wspace=0.025, hspace=0.05)
@@ -187,7 +190,7 @@ def main():
             legend_marker = [Line2D([0], [0], color='r', ls='--', lw=1.5)]
             legend_label = ['onset']
 
-            for note in TARGET_NOTE:
+            for note in target_note_:
                 legend_marker.append(
                     Line2D([0], [0], marker='o', color='w', markerfacecolor=color_map[note],
                            markersize=marker_size * 3))
@@ -208,12 +211,12 @@ def main():
 
         # Plot PETH
         ax_peth = plt.subplot(gs[7, 0:5], sharex=ax_raster)
-        if len(TARGET_NOTE) > 1:
+        if len(target_note_) > 1:
             ax_peth.bar(pi.time_bin, peth.sum(axis=0), color='k', width=bin_size)
         else:
             ax_peth.bar(pi.time_bin, peth.sum(axis=0), color=color_map[note], width=bin_size)
         remove_right_top(ax_peth)
-        ax_peth.set_ylim(0, myround(ax_peth.get_ylim()[1], base=10))
+        ax_peth.set_ylim(0, myround(ax_peth.get_ylim()[1], base=5))
         ax_peth.axvline(x=0, linewidth=1, color='r', ls='--')
         ax_peth.set_xlabel('Time (ms)')
         ax_peth.set_ylabel('# of Spk')
@@ -272,11 +275,11 @@ if __name__ == '__main__':
     sort_by_syllable = False  # if True, plot syllables with the shortest duration first, if False, plot sorted by duration regardless of its identity
     color_syllable = False
     save_folder_name = 'SongTriggeredSpk'
-    save_fig = False
+    save_fig = True
     view_folder = True
     fig_ext = '.png'
 
     # SQL statement
-    query = "SELECT * FROM cluster WHERE id=96"
+    query = "SELECT * FROM cluster WHERE analysisOK AND id>29"
 
     main()
