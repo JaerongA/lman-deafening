@@ -2,8 +2,8 @@
 
 import matplotlib.pyplot as plt
 from pyfinch.database.load import ProjectLoader
-from pyfinch.util import save
-from pyfinch.util.draw import remove_right_top
+from pyfinch.utils import save
+from pyfinch.utils.draw import remove_right_top
 import seaborn as sns
 import warnings
 warnings.filterwarnings('ignore')
