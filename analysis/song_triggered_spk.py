@@ -216,7 +216,7 @@ def main():
         else:
             ax_peth.bar(pi.time_bin, peth.sum(axis=0), color=color_map[note], width=bin_size)
         remove_right_top(ax_peth)
-        ax_peth.set_ylim(0, myround(ax_peth.get_ylim()[1], base=5))
+        ax_peth.set_ylim(0, 15)
         ax_peth.axvline(x=0, linewidth=1, color='r', ls='--')
         ax_peth.set_xlabel('Time (ms)')
         ax_peth.set_ylabel('# of Spk')
@@ -277,9 +277,9 @@ if __name__ == '__main__':
     save_folder_name = 'SongTriggeredSpk'
     save_fig = True
     view_folder = True
-    fig_ext = '.png'
+    fig_ext = '.pdf'
 
     # SQL statement
-    query = "SELECT * FROM cluster WHERE analysisOK AND id>29"
+    query = "SELECT * FROM cluster WHERE analysisOK AND id=113"
 
     main()

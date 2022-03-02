@@ -613,7 +613,7 @@ if __name__ == '__main__':
     normalize_fr = True  # Set True to normalize firing rates
     shuffled_baseline = False  # get PETH from shuffled spikes for getting pcc baseline
     save_folder_name = 'Raster'  # Folder name to save figures
-    save_fig = True  # Save the figure
+    save_fig = False  # Save the figure
     update_db = False  # update database
     view_folder = True  # open the folder where the result figures are saved
     fig_ext = '.pdf'  # set to '.pdf' for vector output (.png by default)
@@ -623,5 +623,5 @@ if __name__ == '__main__':
 
     # SQL statement
     # Select from cluster table
-    query = "SELECT * FROM cluster WHERE analysisOK"
+    query = "SELECT * FROM cluster WHERE birdID='w16w14' AND analysisOK AND id=41"
     main()

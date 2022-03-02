@@ -2,16 +2,16 @@
 Get correlation between entropy and number of spikes per syllable
 """
 
-from pyfinch.analysis import note_buffer, freq_range, nb_note_crit, pre_motor_win_size, alpha
-from pyfinch.analysis import ClusterInfo, AudioData
+from pyfinch.analysis.parameters import note_buffer, freq_range, nb_note_crit, pre_motor_win_size, alpha
+from pyfinch.analysis.spike import ClusterInfo, AudioData
 from pyfinch.database.load import ProjectLoader, DBInfo
-from util import save
+from pyfinch.utils import save
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import pearsonr
-from util.draw import remove_right_top
+from pyfinch.utils.draw import remove_right_top
 import pandas as pd
 
 # Parameter
