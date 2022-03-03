@@ -3,16 +3,22 @@ Syllable duration for all syllables regardless of it type
 Calculation based on EventInfo.m
 """
 
+import warnings
+warnings.filterwarnings('ignore')
+
 
 def get_duration(query):
-    from pyfinch.analysis import get_note_type
-    from pyfinch.analysis import SongInfo
+    from pyfinch.analysis.functions import get_note_type
+    from pyfinch.analysis.song import SongInfo
     from pyfinch.database.load import ProjectLoader, DBInfo
     import pandas as pd
-    from util import save
+    from pyfinch.utils import save
 
     # Create save path
     save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'SyllableDuration')
+
+    # Store results in the dataframe
+    df = pd.DataFrame()
 
     # Load song database
     db = ProjectLoader().load_db()
@@ -28,37 +34,33 @@ def get_duration(query):
         si = SongInfo(path, name)
         print('\nAccessing... ' + si.name)
 
-        # Store results in the dataframe
-        df = pd.DataFrame()
-
         # Organize results
         note_types = get_note_type(''.join(si.syllables).replace('*', ''), song_db)  # Type of the syllables
         nb_notes = len(''.join(si.syllables).replace('*', ''))
         durations = []
         for duration in [list(map(float, duration[duration != '*'])) for duration in si.durations]:
-            durations += duration[0]
+            durations.extend(duration)
 
         # Save results to a dataframe
-        temp_df = []
         temp_df = pd.DataFrame({'SongID': [song_db.id] * nb_notes,
                                 'BirdID': [song_db.birdID] * nb_notes,
                                 'TaskName': [song_db.taskName] * nb_notes,
                                 'TaskSession': [song_db.taskSession] * nb_notes,
                                 'TaskSessionDeafening': [song_db.taskSessionDeafening] * nb_notes,
                                 'TaskSessionPostdeafening': [song_db.taskSessionPostDeafening] * nb_notes,
-                                'Context': ''.join([len(syllable.replace('*', '')) * context for syllable, context
-                                                    in zip(si.syllables, si.contexts)]),
+                                'Context': list(''.join([len(syllable.replace('*', '')) * context for syllable, context in zip(si.syllables, si.contexts)])),
                                 'SyllableType': note_types,
                                 'Syllable': list(''.join(si.syllables).replace('*', '')),
                                 'Duration': durations,
                                 })
         df = df.append(temp_df, ignore_index=True)
+        temp_df = []
 
-        # Save to a file
-        df.index.name = 'Index'
-        outputfile = save_path / 'SyllableDuration.csv'
-        df.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
-        print('Done!')
+    # Save to a file
+    df.index.name = 'Index'
+    outputfile = save_path / 'SyllableDuration.csv'
+    df.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
+    print('Done!')
 
 
 def load_data(data_file, context='ALL', syl_type='ALL'):
@@ -68,17 +70,17 @@ def load_data(data_file, context='ALL', syl_type='ALL'):
     df = pd.read_csv(data_file)
 
     # Select syllables based on social context
-    if context is 'U':
+    if context == 'U':
         df = df.query('Context == "U"')  # select only Undir
-    elif context is 'D':
+    elif context == 'D':
         df = df.query('Context == "D"')  # select only Dir
 
     # Only select syllables of a particular type
-    if syl_type is 'M':
+    if syl_type == 'M':
         df = df.query('SyllableType == "M"')  # eliminate non-labeled syllables (e.g., 0)
-    elif syl_type is 'C':
+    elif syl_type == 'C':
         df = df.query('SyllableType == "C"')  # eliminate non-labeled syllables (e.g., 0)
-    elif syl_type is 'I':
+    elif syl_type == 'I':
         df = df.query('SyllableType == "I"')  # eliminate non-labeled syllables (e.g., 0)
     return df
 
@@ -93,8 +95,7 @@ if __name__ == '__main__':
     if not data_file.exists():
         # Get the syllable duration data if it already exists
         # Load song database
-        query = "SELECT * FROM song WHERE id=1"
-        # query = "SELECT * FROM song WHERE id BETWEEN 1 AND 16"
+        query = "SELECT * FROM song"
         get_duration(query)
         df = load_data(data_file, context='ALL', syl_type='ALL')
     else:  # Get the syllable duration data if it already exists
@@ -103,20 +104,19 @@ if __name__ == '__main__':
     # Plot the results
     import matplotlib.pyplot as plt
     import seaborn as sns
-    from util.functions import unique
-    from util import save
+    from pyfinch.utils import save
     from pyfinch.database.load import ProjectLoader
 
     fig_ext = '.png'
 
-    bird_list = unique(df['BirdID'].tolist())
-    task_list = unique(df['TaskName'].tolist())
+    bird_list = df['BirdID'].unique()
+    task_list = df['TaskName'].unique()
 
     for bird in bird_list:
 
         for task in task_list:
 
-            note_list = unique(df['Syllable'].tolist())
+            note_list = df['Syllable'].unique()
 
             # bird = 'b70r38'
             # task = 'Predeafening'
@@ -127,7 +127,7 @@ if __name__ == '__main__':
             if temp_df.empty:
                 continue
 
-            note_list = unique(temp_df.query('SyllableType == "M"')['Syllable'])  # only motif syllables
+            note_list = temp_df.query('SyllableType == "M"')['Syllable'].unique()  # only motif syllables
 
             title = '-'.join([bird, task])
             fig = plt.figure(figsize=(6, 5))
