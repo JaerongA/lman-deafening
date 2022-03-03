@@ -3,9 +3,9 @@ Analyze syllable gap durations
 """
 
 
-def main():
-    from pyfinch.analysis import find_str
-    from pyfinch.analysis import SongInfo
+def get_gap_duration(query, update, update_db):
+    from pyfinch.utils.functions import find_str
+    from pyfinch.analysis.song import SongInfo
     from collections import defaultdict
     from pyfinch.database.load import ProjectLoader, DBInfo, create_db
     from functools import partial
@@ -60,13 +60,15 @@ def main():
     print('Done!')
 
 
-if __name__ == '__main__':
-
+def main():
     # Parameters
     update = False  # create/update .json cache file
     update_db = True  # create/update database
 
     # SQL statement
     query = "SELECT * FROM song"
+    get_gap_duration(query, update, update_db)
 
+
+if __name__ == '__main__':
     main()
