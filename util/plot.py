@@ -208,7 +208,7 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
                         ):
     import numpy as np
     from scipy import stats
-    from util.stats import get_sig
+    from pyfinch.utils.stats import get_sig
 
     dependent_var.replace('', np.nan,
                           inplace=True)  # replace empty cells with np.nans (to prevent the var to be recognized as non-numeric)
@@ -412,7 +412,7 @@ def plot_paired_data(df, x, y,
     each data point from one syllable or one bird
     """
     from scipy import stats
-    from util.stats import get_sig
+    from pyfinch.utils.stats import get_sig
 
     if 'note' in df.columns:
         df_mean = df.groupby(['birdID', 'note', 'taskName']).mean()[y].reset_index()
@@ -539,7 +539,8 @@ def plot_per_day_block(df, ind_var_name, dep_var_name,
 
     # Run one-way ANOVA
     import scipy.stats as stats
-    from util.stats import get_sig
+    from pyfinch.utils.stats import get_sig
+
     if len(ind_groups) == 5:
         f_val, p_val = stats.f_oneway(df[dep_var_name][df[ind_var_name] == 0].to_numpy(),
                                       df[dep_var_name][df[ind_var_name] == 1].to_numpy(),
@@ -619,7 +620,7 @@ def plot_line_across_blocks(df_block, variable,
 
     # Run one-way ANOVA
     import scipy.stats as stats
-    from util.stats import get_sig
+    from pyfinch.utils.stats import get_sig
 
     if len(df_block['block10days'].unique()) == 4:
         f_val, p_val = stats.f_oneway(
