@@ -41,6 +41,7 @@ def plot_scatter_diagonal(df, x, y, hue=None,
                           x_lim=None, y_lim=None,
                           x_label=None, y_label=None, tick_freq=0.1,
                           title=None,
+                          figsize=[9, 4],
                           diagonal=True,  # plot diagonal line
                           paired_test=True,
                           save_fig=False,
@@ -54,7 +55,7 @@ def plot_scatter_diagonal(df, x, y, hue=None,
     nb_col = 2
 
     # Plot scatter with diagonal
-    fig, ax = plt.subplots(figsize=(9, 4))
+    fig, ax = plt.subplots(figsize=figsize)
     plt.suptitle(title, y=.9, fontsize=15)
     task_list = ['Predeafening', 'Postdeafening']
 
