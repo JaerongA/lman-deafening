@@ -87,7 +87,7 @@ def get_raster_syllable():
                 from copy import deepcopy
                 next_note = song_note[song_note.find(note) + 1]
                 can_seq_ind = find_str(ni.next_notes, next_note)  # index of notes within the canonical sequence
-                if  can_seq_ind:
+                if can_seq_ind:
 
                     ni_seq = deepcopy(ni)
 
@@ -106,18 +106,18 @@ def get_raster_syllable():
 
                     # Update db
                     if update_db:
-                        db.create_col(db_table, 'nbInseqNoteUndir', 'INT')
-                        db.create_col(db_table, 'nbInseqNoteDir', 'INT')
+                        db.create_col(db_table, 'nbOutseqNoteUndir', 'INT')
+                        db.create_col(db_table, 'nbOutseqNoteDir', 'INT')
                         db.create_col(db_table, 'pccUndirInSeq', 'REAL')
                         db.create_col(db_table, 'pccDirInSeq', 'REAL')
                         db.conn.commit()
 
                         if 'U' in ni.nb_note:
-                            db.cur.execute(f"""UPDATE syllable_pcc SET nbInseqNoteUndir = ({ni_seq.nb_note['U']}) 
+                            db.cur.execute(f"""UPDATE syllable_pcc SET nbOutseqNoteUndir = ({ni.nb_note['U'] - ni_seq.nb_note['U']}) 
                             WHERE clusterID = {cluster_db.id} AND note = '{note}'""")
 
                         if 'D' in ni.nb_note:
-                            db.cur.execute(f"""UPDATE syllable_pcc SET nbInseqNoteDir = ({ni_seq.nb_note['D']}) 
+                            db.cur.execute(f"""UPDATE syllable_pcc SET nbOutseqNoteDir = ({ni.nb_note['D'] - ni_seq.nb_note['D']}) 
                             WHERE clusterID = {cluster_db.id} AND note = '{note}'""")
 
                         if ni_seq.nb_note['U'] >= nb_note_crit:
@@ -474,14 +474,23 @@ def get_raster_syllable():
                     txt_yloc -= txt_inc
                 txt_yloc -= txt_inc
 
-            # # of in-sequence notes
+            # # of out-sequence notes
             if note is not song_note[-1]:  # if not the last note in the song note
                 txt_xloc = 1.8
                 txt_yloc = 0.8
 
                 if 'ni_seq' in locals():
-                    for i, (k, v) in enumerate(ni_seq.nb_note.items()):
-                        ax_txt.text(txt_xloc, txt_yloc, f"# of in-seq notes ({k}) = {v}", fontsize=font_size)
+
+                    def get_out_seq_nb_note():
+                        nb_note_outseq = dict()
+                        for all, inseq in zip(ni.nb_note.items(), ni_seq.nb_note.items()):
+                            nb_note_outseq[all[0]] = all[1] - inseq[1]
+                        return nb_note_outseq
+
+                    nb_note_outseq = get_out_seq_nb_note()
+
+                    for i, (k, v) in enumerate(nb_note_outseq.items()):
+                        ax_txt.text(txt_xloc, txt_yloc, f"# of out-seq notes ({k}) = {v}", fontsize=font_size)
                         txt_yloc -= txt_inc
                     txt_yloc -= txt_inc
 
@@ -653,7 +662,7 @@ if __name__ == '__main__':
     db_path = '../database/create_syllable_pcc.sql'
 
     # SQL statement
-    # query = "SELECT * FROM cluster WHERE id=96"
-    query = "SELECT * FROM cluster WHERE analysisOK ANd id >= 115"
+    # query = "SELECT * FROM cluster WHERE id=115"
+    query = "SELECT * FROM cluster WHERE analysisOK"
 
     get_raster_syllable()
