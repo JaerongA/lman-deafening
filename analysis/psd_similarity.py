@@ -2,7 +2,7 @@
 Get PSD similarity to measure changes in song after deafening
 """
 
-from pyfinch.analysis import ClusterInfo
+from pyfinch.analysis.spike import ClusterInfo
 from pyfinch.analysis import get_pre_motor_spk_per_note
 import matplotlib.gridspec as gridspec
 import numpy as np

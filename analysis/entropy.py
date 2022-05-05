@@ -15,11 +15,11 @@ def get_entropy(query,
     from pyfinch.analysis import note_buffer, freq_range, nb_note_crit
     from pyfinch.analysis import AudioInfo, SongInfo
     from pyfinch.database.load import create_db, DBInfo, ProjectLoader
-    from util import save
+    from pyfinch.utils import save
+    from pyfinch.utils.draw import remove_right_top
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
     import matplotlib.pyplot as plt
-    from util.draw import remove_right_top
     import pandas as pd
 
     # Create & Load database

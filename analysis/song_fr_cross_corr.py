@@ -53,8 +53,7 @@ def get_cross_corr(sig1, sig2, lag_lim=None):
     sig1 = sig1[:nb_sig]
     sig2 = sig2[:nb_sig]
 
-    def xcorr(x, y, normed=True,
-              maxlags=10):
+    def xcorr(x, y, normed=True, maxlags=10):
         Nx = len(x)
         if Nx != len(y):
             raise ValueError('x and y must be equal length')

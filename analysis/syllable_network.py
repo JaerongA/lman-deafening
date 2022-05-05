@@ -9,7 +9,9 @@ import numpy as np
 import seaborn as sns
 from pyfinch.utils import save
 import warnings
+
 warnings.filterwarnings('ignore')
+
 
 def nb_song_note_in_bout(song_notes: str, bout: str) -> int:
     """Returns the number of song notes within a bout"""
@@ -181,7 +183,6 @@ def get_trans_entropy(trans_matrix: np.ndarray, weighted=False, ignore_repeats=F
 
 
 def get_sequence_linearity(note_seq: str, syl_network: list) -> float:
-
     nb_unique_transitions = len(syl_network)
     # print(nb_unique_transitions)
     nb_unique_syllables = len(note_seq) - 1  # stop syllable (*) not counted here
@@ -191,7 +192,6 @@ def get_sequence_linearity(note_seq: str, syl_network: list) -> float:
 
 
 def get_sequence_consistency(note_seq: str, trans_matrix: np.ndarray) -> float:
-
     typical_transition = []
     for i, row in enumerate(trans_matrix):
         max_ind = np.where(row == np.amax(row))
@@ -425,7 +425,6 @@ def main():
 
 
 if __name__ == '__main__':
-
     # Parameters
     update = False  # update/create cache file
     update_db = False

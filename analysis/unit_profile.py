@@ -2,11 +2,11 @@
 Get unit profiles such as spike correlograms or burstiness
 """
 
-from pyfinch.analysis import spk_corr_parm
-from pyfinch.analysis import BaselineInfo, BurstingInfo, Correlogram, MotifInfo
+from pyfinch.analysis.parameters import spk_corr_parm
+from pyfinch.analysis.spike import BaselineInfo, BurstingInfo, Correlogram, MotifInfo
 from pyfinch.database.load import ProjectLoader, DBInfo, create_db
 import matplotlib.pyplot as plt
-from util import save
+from pyfinch.utils import save
 
 
 def print_out_text(ax, peak_latency,
