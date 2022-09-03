@@ -7,14 +7,14 @@ def plot_raster_bouts(query,
                       bout_nb='All',
                       fig_ext='.png'
                       ):
-    from pyfinch.analysis import AudioData, BoutInfo, ClusterInfo, NeuralData
-    from pyfinch.analysis import bout_buffer, freq_range, bout_color
+    from pyfinch.analysis.spike import AudioData, BoutInfo, ClusterInfo, NeuralData
+    from pyfinch.analysis.parameters import bout_buffer, freq_range, bout_color
     from pyfinch.database.load import ProjectLoader, DBInfo
     import matplotlib.pyplot as plt
     import matplotlib.colors as colors
     import numpy as np
-    from util import save
-    from util.draw import remove_right_top
+    from pyfinch.utils import save
+    from pyfinch.utils.draw import remove_right_top
     from scipy import stats
     import warnings
     warnings.filterwarnings('ignore')
@@ -166,11 +166,11 @@ def plot_raster_bouts(query,
 
 if __name__ == '__main__':
     # Parameters
-    bout_nb = 4  # bout index you want to plot (if set None, plot all bouts)
+    bout_nb = 11  # bout index you want to plot (if set None, plot all bouts)
     update = False  # update .json cache files
     save_fig = True  # save output figures
     view_folder = True  # open the folder where the result figures are saved
-    fig_ext = '.png'  # set to '.pdf' for vector output (.png by default)
+    fig_ext = '.pdf'  # set to '.pdf' for vector output (.png by default)
     save_folder_name = 'RasterBouts'
 
     # SQL statement

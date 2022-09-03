@@ -648,20 +648,20 @@ if __name__ == '__main__':
     time_warp = True  # spike time warping
     update = False  # set True for recreating a cache file
     update_db = True  # save results to DB
+    save_fig = True
     entropy = True  # calculate entropy & entropy variance
     entropy_mode = 'spectral'  # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
-    shuffled_baseline = False  # get pcc shuffling baseline
+    shuffled_baseline = True  # get pcc shuffling baseline
     plot_hist = False  # draw histogram of the shuffled pcc values
-    save_fig = True
-    fig_ext = '.pdf'  # .png or .pdf
+    fig_ext = '.png'  # .png or .pdf
     save_folder_name = 'RasterSyllable'
-    TARGET_NOTE = 'a'  # notes to plot (set to 'all' to plot all syllables)
+    TARGET_NOTE = 'all'  # notes to plot (set to 'all' to plot all syllables)
     NOTE_CONTEXT = 'U'  # context to plot ('U', 'D', set to None if you want to plot both)
     db_table = 'syllable_pcc'  # update this table
     db_path = '../database/create_syllable_pcc.sql'
 
     # SQL statement
-    # query = "SELECT * FROM cluster WHERE analysisOK"
-    query = "SELECT * FROM cluster WHERE id=96"
+    query = "SELECT * FROM cluster WHERE analysisOK"
+    # query = "SELECT * FROM cluster WHERE id=96"
 
     get_raster_syllable()
