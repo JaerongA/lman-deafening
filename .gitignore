@@ -1,5 +1,42 @@
-.idea/
-__pycache__/
-venv/
-.ipynb_checkpoints
-results
+# Temporary and binary files
+*~
+*.py[cod]
+*.so
+*.cfg
+!.isort.cfg
+!setup.cfg
+*.orig
+*.log
+*.pot
+**/__pycache__
+.cache/*
+.*.swp
+*/.ipynb_checkpoints/*
+.DS_Store
+.mypy_cache/*
+
+# Project setting
+.ropeproject
+.project
+.pydevproject
+.settings
+.idea
+.vscode
+
+# Virtual envs
+.venv*/
+.conda*/
+
+# Package files
+*.egg
+*.eggs/
+.installed.cfg
+*.egg-info
+environment.lock.yml
+
+# DataJoint files
+dj_local_c*.json
+
+# Misc files/folders
+pyproject.code-workspace
+scratch/*
