@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=62.0", "wheel>=0.37"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lman_deafening"
+version = "0.0.0"
+description = "Electrophysiology recording in LMAN under auditory perturbation"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Jaerong Ahn", email = "jaerongahn@gmail.com" }]
+dependencies = [
+    "plotly",
+    "scipy",
+    "pandas",
+    "seaborn",
+    "numpy",
+    "matplotlib",
+    "ipython",
+    "networkx<2.8.3",
+    "element-lab",
+    "element-animal",
+    "element-session",
+    "element-event",
+    "element-array-ephys",
+]
+
+[project.optional-dependencies]
+dev = ["black", "isort", "flake8", "pre-commit", "pytest"]
+doc = [
+    "mkdocs",
+    "mkdocstrings-python",
+    "mkdocs-material",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "mkdocs-section-index",
+    "mkdocs-include-markdown-plugin",
+    "mike",
+    "pymdown-extensions",
+]
+
+[tool.setuptools]
+package_dir = {"": "src"}
+packages = ["lman-deafening"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-rA"
+testpaths = ["tests"]
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+color = false
+include = '^src/.*\.py$'
+
+[tool.isort]
+profile = "black"
+
+ignore = ["**/*.ipynb", "notebooks"]
+reportMissingImports = true
