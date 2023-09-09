@@ -29,7 +29,7 @@ repos:
     rev: 5.0.4
     hooks:
       - id: flake8
-        exclude: (^tests/(integration/fixtures|unit/data)/)|(notebooks/)|(scripts/)
+        exclude: (^tests/)|(notebooks/)
         args:
           # making isort line length compatible with black
           # https://flake8.pycqa.org/en/latest/user/error-codes.html
