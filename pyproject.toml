@@ -16,6 +16,7 @@ dependencies = [
     "graphviz",
     "graphviz",
     "ipython",
+    "ipykernel",
     "matplotlib",
     "networkx<2.8.3",
     "numpy",
