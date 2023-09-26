@@ -25,6 +25,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+docker/data/*
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -152,8 +153,16 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# PyCharm
-.idea/
+# Project files
+.ropeproject
+.project
+.pydevproject
+.settings
+.idea
+.vscode
+tags
+profile_default/
+ipython_config.py
 
 # DataJoint files
 dj_*.json
