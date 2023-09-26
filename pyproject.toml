@@ -7,42 +7,32 @@ name = "lman_deafening"
 version = "0.0.0"
 description = "Electrophysiology recording in LMAN under auditory perturbation"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = { file = "LICENSE" }
 authors = [{ name = "Jaerong Ahn", email = "jaerongahn@gmail.com" }]
 dependencies = [
-    "plotly",
-    "scipy",
-    "pandas",
-    "seaborn",
-    "numpy",
-    "matplotlib",
+    "datajoint-utilities @ git+https://github.com/datajoint-company/datajoint-utilities",
+    "datajoint>=0.13.7",
+    "graphviz",
+    "graphviz",
     "ipython",
+    "matplotlib",
     "networkx<2.8.3",
-    "element-lab",
-    "element-animal",
-    "element-session",
-    "element-event",
-    "element-array-ephys",
+    "numpy",
+    "pandas",
+    "plotly",
+    "pydantic",
+    "pyfinch @ git+https://github.com/JaerongA/pyfinch.git",
+    "scikit-learn",
+    "scipy",
+    "seaborn",
 ]
 
 [project.optional-dependencies]
 dev = ["black", "isort", "flake8", "pre-commit", "pytest"]
-doc = [
-    "mkdocs",
-    "mkdocstrings-python",
-    "mkdocs-material",
-    "mkdocs-gen-files",
-    "mkdocs-literate-nav",
-    "mkdocs-section-index",
-    "mkdocs-include-markdown-plugin",
-    "mike",
-    "pymdown-extensions",
-]
 
 [tool.setuptools]
-package_dir = {"": "src"}
-packages = ["lman-deafening"]
+package-data = { "*" = ["*.pyi", "py.typed"] }
 
 [tool.setuptools.packages.find]
 where = ["src"]
